@@ -1,0 +1,105 @@
+[
+  {
+    "id": "bennett1984",
+    "title": "Quantum cryptography: Public key distribution and coin tossing",
+    "authors": [
+      "Charles H. Bennett",
+      "Gilles Brassard"
+    ],
+    "year": 1984,
+    "arxiv": "2003.06557",
+    "pdf_url": "https://arxiv.org/pdf/2003.06557",
+    "filename": "01_bennett_brassard_1984_bb84.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "gisin2002",
+    "title": "Quantum cryptography",
+    "authors": [
+      "Nicolas Gisin",
+      "Gregoire Ribordy",
+      "Wolfgang Tittel",
+      "Hugo Zbinden"
+    ],
+    "year": 2002,
+    "arxiv": "quant-ph/0101098",
+    "pdf_url": "https://arxiv.org/pdf/quant-ph/0101098",
+    "filename": "02_gisin_2002_quantum_cryptography.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "scarani2009",
+    "title": "The security of practical quantum key distribution",
+    "authors": [
+      "Valerio Scarani",
+      "Helle Bechmann-Pasquinucci",
+      "Nicolas J. Cerf",
+      "Miloslav Dusek",
+      "Norbert Lutkenhaus",
+      "Momtchil Peev"
+    ],
+    "year": 2009,
+    "arxiv": "0802.4155",
+    "pdf_url": "https://arxiv.org/pdf/0802.4155",
+    "filename": "03_scarani_2009_practical_security.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "cai2009",
+    "title": "Finite-key analysis for practical implementations of quantum key distribution",
+    "authors": [
+      "Raymond Y. Q. Cai",
+      "Valerio Scarani"
+    ],
+    "year": 2009,
+    "arxiv": "0811.2628",
+    "pdf_url": "https://arxiv.org/pdf/0811.2628",
+    "filename": "04_cai_scarani_2009_finite_key.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "tomamichel2012",
+    "title": "Tight finite-key analysis for quantum cryptography",
+    "authors": [
+      "Marco Tomamichel",
+      "Charles Ci Wen Lim",
+      "Nicolas Gisin",
+      "Renato Renner"
+    ],
+    "year": 2012,
+    "arxiv": "1103.4130",
+    "pdf_url": "https://arxiv.org/pdf/1103.4130",
+    "filename": "05_tomamichel_2012_tight_finite_key.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "fiorini2024",
+    "title": "Estimating Interception Density in the BB84 Protocol: A Study with a Noisy Quantum Simulator",
+    "authors": [
+      "Francesco Fiorini",
+      "Michele Pagano",
+      "Rosario Giuseppe Garroppo",
+      "Antonio Osele"
+    ],
+    "year": 2024,
+    "doi": "10.3390/fi16080275",
+    "arxiv": null,
+    "pdf_url": "https://www.mdpi.com/1999-5903/16/8/275/pdf",
+    "fallback_url": "https://arpi.unipi.it/handle/11568/1271727",
+    "filename": "06_fiorini_2024_noisy_intercept_density.pdf",
+    "priority": "essential"
+  },
+  {
+    "id": "shor2000",
+    "title": "Simple Proof of Security of the BB84 Quantum Key Distribution Protocol",
+    "authors": [
+      "Peter W. Shor",
+      "John Preskill"
+    ],
+    "year": 2000,
+    "arxiv": "quant-ph/0003004",
+    "pdf_url": "https://arxiv.org/pdf/quant-ph/0003004",
+    "filename": "07_shor_preskill_2000_security_proof.pdf",
+    "priority": "optional"
+  }
+]

@@ -61,13 +61,30 @@ git clone "<repository-url>"
 cd "<repository-directory>"
 ```
 
-Projekt podpira **Python 3.11–3.13**, priporočena je različica 3.12. Potrebujemo Python z moduloma `venv` in `pip`, dostop do interneta ter Bash za zagonsko skripto:
+Projekt podpira **Python 3.11–3.14**, priporočena je različica 3.14. Potrebujemo Python z moduloma `venv` in `pip`, dostop do interneta ter Bash za zagonsko skripto:
 
 ```bash
 ./scripts/bootstrap.sh
 ```
 
 Skripta po potrebi ustvari `.venv`, namesti pakete iz `requirements.lock`, pripravi paket `bb84` za razvoj v urejevalnem načinu in preveri uvoze. Ponovni zagon ohrani obstoječe okolje. Zagonska skripta zahteva Bash; drugih lupin zanjo ne predpostavljamo.
+
+Pri ustvarjanju okolja skripta najprej poišče Python 3.14, nato starejše podprte različice. Interpreter lahko izberemo izrecno:
+
+```bash
+BB84_PYTHON=python3.14 ./scripts/bootstrap.sh
+```
+
+Če `.venv` že obstaja in želimo preiti na Python 3.14, staro okolje najprej preimenujemo (npr. `mv .venv .venv-backup`) in ponovno zaženemo zgornji ukaz.
+
+### Posodobitev odvisnosti
+
+`requirements.lock` določa preverjene različice in njihove zgoščene vrednosti. Z nameščenim orodjem [uv](https://docs.astral.sh/uv/) ga posodobimo na najnovejše združljive stabilne izdaje za podprte različice Pythona:
+
+```bash
+uv pip compile pyproject.toml --extra dev --universal --upgrade --generate-hashes --only-binary :all: --no-emit-package bb84-seminar --output-file requirements.lock
+./scripts/bootstrap.sh
+```
 
 ## Aktivacija okolja
 

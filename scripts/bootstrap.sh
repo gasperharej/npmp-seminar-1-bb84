@@ -9,7 +9,7 @@ export MPLCONFIGDIR="${MPLCONFIGDIR:-$PWD/.cache/matplotlib}"
 if [[ ! -e .venv ]]; then
     bb84_python="${BB84_PYTHON:-}"
     if [[ -z "$bb84_python" ]]; then
-        for candidate in python3.12 python3.11 python3.13; do
+        for candidate in python3.14 python3.13 python3.12 python3.11; do
             if command -v "$candidate" >/dev/null 2>&1; then
                 bb84_python="$candidate"
                 break
@@ -17,7 +17,7 @@ if [[ ! -e .venv ]]; then
         done
     fi
     if [[ -z "$bb84_python" ]]; then
-        printf '%s\n' 'Potrebujete Python 3.12 (ali 3.11/3.13); nastavite BB84_PYTHON.' >&2
+        printf '%s\n' 'Potrebujete Python 3.11–3.14; nastavite BB84_PYTHON.' >&2
         exit 1
     fi
     "$bb84_python" -m venv .venv
@@ -30,8 +30,8 @@ fi
 
 .venv/bin/python - <<'PY'
 import sys
-if not (3, 11) <= sys.version_info[:2] < (3, 14):
-    raise SystemExit('Projekt podpira Python 3.11–3.13; priporočena je različica 3.12.')
+if not (3, 11) <= sys.version_info[:2] < (3, 15):
+    raise SystemExit('Projekt podpira Python 3.11–3.14; priporočena je različica 3.14.')
 if sys.prefix == sys.base_prefix:
     raise SystemExit('Interpreter ni v navideznem okolju.')
 print(f'Python: {sys.version.split()[0]} ({sys.executable})')

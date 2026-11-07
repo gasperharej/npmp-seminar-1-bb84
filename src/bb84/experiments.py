@@ -61,9 +61,21 @@ def estimate_detection_rate(
         return sum(results) / repetitions # detection rate = št. sproženih zaznav / št. ponovitev
 
 
-if __name__ == "__main__":
-    print("Brez Eve:")
-    print(run_trial(500, 50, 0.2, 0.0))
+import time
 
-    print("Z Eve:")
-    print(run_trial(500, 50, 0.2, 1.0))
+if __name__ == "__main__":
+    for workers in [1, 2, 4, 8]:
+        start = time.perf_counter()
+
+        rate = estimate_detection_rate(
+            repetitions=16,
+            n=300,
+            sample_size=50,
+            noise_level=0.2,
+            interception_rate=1.0,
+            workers=workers,
+        )
+
+        elapsed = time.perf_counter() - start
+
+        print(f"{workers} procesov: {elapsed:.2f} s, zaznave: {rate:.1%}")

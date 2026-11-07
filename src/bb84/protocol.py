@@ -31,17 +31,11 @@ def measure_state(qc: QuantumCircuit, basis: str) -> None:
     qc.measure(0,0)
 
 
-def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None = None, noise_level: float = 0.0) -> int:
+def transmit(bit: int, alice_basis: str, bob_basis: str, simulator: AerSimulator, eve_basis: str | None = None, noise_level: float = 0.0) -> int:
     """prenos kubita med alice in bobom (eve je lahko prisotna ali pa ne)"""
 
     # Ustvari kvantno vezje z 1 kubitom in 2 klasičnima bitoma - prvi je za boba, drugi za eve, da se vanj shranjujejo vrednosti emritev enega qubita ki ga imamo
     qc = QuantumCircuit(1, 2) 
-
-    noise_model = NoiseModel() #prazen model šuma
-    
-    error = depolarizing_error(noise_level, 1) #depolarizacijska napaka velikosti noise_level, na edinem kubitu v vezju
-    
-    noise_model.add_all_qubit_quantum_error(error, ["id"]) #uporabi napako error na vsaki operaciji vrste id, ne glede na indeks kubita
 
     #Alice pripravi kubit
     prepare_state(qc, bit, alice_basis)
@@ -56,7 +50,6 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None =
     measure_state(qc, bob_basis)
 
     # Izvede vezje s simulatorjem (shots=1) - izvede se en prenos kubita med alice in bobom
-    simulator = AerSimulator(noise_model=noise_model, max_parallel_threads=1) #simulator, ki upošteva model šuma
     result = simulator.run(qc, shots=1, memory=True).result()
 
     # Pridobmo Bobov izmerjeni bit
@@ -70,6 +63,15 @@ def run_bb84(n: int, interception_rate: float = 0.0, noise_level: float = 0.0) -
     """Simulira n prenosov protokola BB84."""
     transmissions = []
 
+    noise_model = NoiseModel() #prazen model šuma 
+    error = depolarizing_error(noise_level, 1) #depolarizacijska napaka velikosti noise_level, na edinem kubitu v vezju
+    noise_model.add_all_qubit_quantum_error(error, ["id"]) #uporabi napako error na vsaki operaciji vrste id, ne glede na indeks kubita
+
+    simulator = AerSimulator(
+        noise_model=noise_model,
+        max_parallel_threads=1,
+    ) #simulator, ki upošteva model šuma
+
     for _ in range(n):
         # Alicein naključni bit
         bit = random.randint(0, 1)
@@ -77,7 +79,7 @@ def run_bb84(n: int, interception_rate: float = 0.0, noise_level: float = 0.0) -
         # Aliceina naključna baza
         alice_basis = random.choice(["X", "Z"])
 
-        # Eve prestreže vsak kubit in naključno izbere merilno bazo
+        # Eve z določeno verjetnostjo prestreže kubit in izbere naključno merilno bazo
         if random.random() < interception_rate:
             eve_basis = random.choice(["X", "Z"])
         else:
@@ -87,7 +89,7 @@ def run_bb84(n: int, interception_rate: float = 0.0, noise_level: float = 0.0) -
         bob_basis = random.choice(["X", "Z"])
 
         # prenos
-        measured_bit = transmit(bit, alice_basis, bob_basis, eve_basis, noise_level)
+        measured_bit = transmit(bit, alice_basis, bob_basis, simulator, eve_basis, noise_level)
 
         measurement = {
                 "alice_bit": bit,

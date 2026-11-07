@@ -56,7 +56,7 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None =
     measure_state(qc, bob_basis)
 
     # Izvede vezje s simulatorjem (shots=1) - izvede se en prenos kubita med alice in bobom
-    simulator = AerSimulator(noise_model=noise_model) #simulator, ki upošteva model šuma
+    simulator = AerSimulator(noise_model=noise_model, max_parallel_threads=1) #simulator, ki upošteva model šuma
     result = simulator.run(qc, shots=1, memory=True).result()
 
     # Pridobmo Bobov izmerjeni bit

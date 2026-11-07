@@ -42,9 +42,6 @@ def transmit(bit: int, alice_basis: str, bob_basis: str) -> int:
 
     return int(measured_bit)
 
-print(transmit(1, "X", "X"))
-print(transmit(1, "X", "Z"))
-
 
 def run_bb84(n: int) -> list[dict]:
     """Simulira n prenosov protokola BB84."""
@@ -74,8 +71,6 @@ def run_bb84(n: int) -> list[dict]:
 
     return transmissions
 
-print(run_bb84(10))
-
 
 def sift_transmissions(transmissions: list[dict]) -> list[dict]:
     """Obdrži prenose, kjer sta Alice in Bob izbrala isto bazo."""
@@ -86,12 +81,6 @@ def sift_transmissions(transmissions: list[dict]) -> list[dict]:
             sifted.append(transmission)
 
     return sifted
-
-transmissions = run_bb84(100)
-sifted = sift_transmissions(transmissions)
-
-print("Vsi prenosi:", len(transmissions))
-print("Obdržani prenosi:", len(sifted))
 
 
 def calculate_qber(sifted: list[dict]) -> float:
@@ -106,10 +95,3 @@ def calculate_qber(sifted: list[dict]) -> float:
             errors += 1
 
     return errors / len(sifted)
-
-transmissions = run_bb84(1000)
-sifted = sift_transmissions(transmissions)
-
-print("Prenosi:", len(transmissions))
-print("Obdržani biti:", len(sifted))
-print("QBER:", calculate_qber(sifted))

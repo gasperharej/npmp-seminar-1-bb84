@@ -13,6 +13,17 @@ def prepare_state(qc: QuantumCircuit, bit: int, basis: str) -> None:
         pass   
 
 
+def interception(qc: QuantumCircuit, basis: str) -> None:
+    """Eve prestreže in izmeri kubit v izbrani bazi."""
+
+    if basis == "Z":
+        qc.measure(0, 1)
+    else:
+        qc.h(0)
+        qc.measure(0, 1)
+        qc.h(0)
+
+
 def measure_state(qc: QuantumCircuit, basis: str) -> None:
     """Izmeri kubit v izbrani bazi."""
     if basis == "Z":
@@ -22,13 +33,16 @@ def measure_state(qc: QuantumCircuit, basis: str) -> None:
         qc.measure(0,0)
 
 
-def transmit(bit: int, alice_basis: str, bob_basis: str) -> int:
+def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None = None) -> int:
 
-    # Ustvari kvantno vezje z 1 kubitom in 1 klasičnim bitom
-    qc = QuantumCircuit(1, 1)
+    # Ustvari kvantno vezje z 1 kubitom in 2 klasičnima bitoma - prvi je za boba, drugi za eve, da se vanj shranjujejo vrednosti emritev enega qubita ki ga imamo
+    qc = QuantumCircuit(1, 2) 
 
     #Alice pripravi kubit
     prepare_state(qc, bit, alice_basis)
+
+    if eve_basis is not None:
+        interception(qc, eve_basis)
 
     #Bob izmeri kubit
     measure_state(qc, bob_basis)
@@ -38,12 +52,13 @@ def transmit(bit: int, alice_basis: str, bob_basis: str) -> int:
     result = simulator.run(qc, shots=1, memory=True).result()
 
     # Pridobmo Bobov izmerjeni bit
-    measured_bit = result.get_memory(qc)[0]
+    memory = result.get_memory(qc)[0] #vrne npr. "10", kjer je 1 bit ki ga je izmerila eve, 0 pa bit ki ga je izmeril bob
+    bob_measured_bit = memory[-1]
 
-    return int(measured_bit)
+    return int(bob_measured_bit)
 
 
-def run_bb84(n: int) -> list[dict]:
+def run_bb84(n: int, intercepted: bool = False) -> list[dict]:
     """Simulira n prenosov protokola BB84."""
     transmissions = []
 
@@ -54,15 +69,22 @@ def run_bb84(n: int) -> list[dict]:
         # Aliceina naključna baza
         alice_basis = random.choice(["X", "Z"])
 
+        # Eve prestreže vsak kubit in naključno izbere merilno bazo
+        if intercepted:
+            eve_basis = random.choice(["X", "Z"])
+        else:
+            eve_basis = None
+
         # Bobova naključna baza
         bob_basis = random.choice(["X", "Z"])
 
         # prenos
-        measured_bit = transmit(bit, alice_basis, bob_basis)
+        measured_bit = transmit(bit, alice_basis, bob_basis, eve_basis)
 
         measurement = {
                 "alice_bit": bit,
                 "alice_basis": alice_basis,
+                "eve_basis": eve_basis,
                 "bob_basis": bob_basis,
                 "bob_bit": measured_bit
             }
@@ -97,21 +119,13 @@ def calculate_qber(sifted: list[dict]) -> float:
     return errors / len(sifted)
 
 
-def interception(qc: QuantumCircuit, basis: str) -> None:
-    """Eve prestreže in izmeri kubit v izbrani bazi."""
-    
-    if basis == "Z":
-        qc.measure(0, 1)
-    else:
-        qc.h(0)
-        qc.measure(0, 1)
-        qc.h(0)
+normal = sift_transmissions(run_bb84(1000))
+attacked = sift_transmissions(run_bb84(1000, intercepted=True))
 
+print("Brez Eve:")
+print("Obdržanih bitov:", len(normal))
+print("QBER:", calculate_qber(normal))
 
-qc = QuantumCircuit(1, 2)
-
-prepare_state(qc, 1, "X")  # Alice
-interception(qc, "Z")     # Eve
-measure_state(qc, "X")    # Bob
-
-print(qc.draw())
+print("\nZ Eve:")
+print("Obdržanih bitov:", len(attacked))
+print("QBER:", calculate_qber(attacked))

@@ -1,4 +1,6 @@
 from qiskit import QuantumCircuit
+from qiskit_aer import AerSimulator
+import random
 
 
 def prepare_state(qc: QuantumCircuit, bit: int, basis: str) -> None:
@@ -8,9 +10,7 @@ def prepare_state(qc: QuantumCircuit, bit: int, basis: str) -> None:
     if basis == "X":
         qc.h(0)
     else:
-        pass
-        
-        
+        pass   
 
 
 def measure_state(qc: QuantumCircuit, basis: str) -> None:
@@ -20,3 +20,58 @@ def measure_state(qc: QuantumCircuit, basis: str) -> None:
     else:
         qc.h(0)
         qc.measure(0,0)
+
+
+def transmit(bit: int, alice_basis: str, bob_basis: str) -> int:
+
+    # Ustvari kvantno vezje z 1 kubitom in 1 klasičnim bitom
+    qc = QuantumCircuit(1, 1)
+
+    #Alice pripravi kubit
+    prepare_state(qc, bit, alice_basis)
+
+    #Bob izmeri kubit
+    measure_state(qc, bob_basis)
+
+    # Izvede vezje s simulatorjem (shots=1) - izvede se en prenos kubita med alice in bobom
+    simulator = AerSimulator()
+    result = simulator.run(qc, shots=1, memory=True).result()
+
+    # Pridobmo Bobov izmerjeni bit
+    measured_bit = result.get_memory(qc)[0]
+
+    return int(measured_bit)
+
+print(transmit(1, "X", "X"))
+print(transmit(1, "X", "Z"))
+
+
+def run_bb84(n: int) -> list[dict]:
+    """Simulira n prenosov protokola BB84."""
+    transmissions = []
+
+    for _ in range(n):
+        # Alicein naključni bit
+        bit = random.randint(0, 1)
+
+        # Aliceina naključna baza
+        alice_basis = random.choice(["X", "Z"])
+
+        # Bobova naključna baza
+        bob_basis = random.choice(["X", "Z"])
+
+        # prenos
+        measured_bit = transmit(bit, alice_basis, bob_basis)
+
+        measurement = {
+                "alice_bit": bit,
+                "alice_basis": alice_basis,
+                "bob_basis": bob_basis,
+                "bob_bit": measured_bit
+            }
+
+        transmissions.append(measurement)
+
+    return transmissions
+
+print(run_bb84(10))

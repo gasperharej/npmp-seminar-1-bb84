@@ -75,3 +75,20 @@ def run_bb84(n: int) -> list[dict]:
     return transmissions
 
 print(run_bb84(10))
+
+
+def sift_transmissions(transmissions: list[dict]) -> list[dict]:
+    """Obdrži prenose, kjer sta Alice in Bob izbrala isto bazo."""
+    sifted = []
+
+    for transmission in transmissions:
+        if transmission["alice_basis"] == transmission["bob_basis"]:
+            sifted.append(transmission)
+
+    return sifted
+
+transmissions = run_bb84(100)
+sifted = sift_transmissions(transmissions)
+
+print("Vsi prenosi:", len(transmissions))
+print("Obdržani prenosi:", len(sifted))

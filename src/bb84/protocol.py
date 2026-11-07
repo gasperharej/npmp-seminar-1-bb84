@@ -95,3 +95,23 @@ def calculate_qber(sifted: list[dict]) -> float:
             errors += 1
 
     return errors / len(sifted)
+
+
+def interception(qc: QuantumCircuit, basis: str) -> None:
+    """Eve prestreže in izmeri kubit v izbrani bazi."""
+    
+    if basis == "Z":
+        qc.measure(0, 1)
+    else:
+        qc.h(0)
+        qc.measure(0, 1)
+        qc.h(0)
+
+
+qc = QuantumCircuit(1, 2)
+
+prepare_state(qc, 1, "X")  # Alice
+interception(qc, "Z")     # Eve
+measure_state(qc, "X")    # Bob
+
+print(qc.draw())

@@ -1,10 +1,11 @@
+import random
 from qiskit import QuantumCircuit
 from qiskit_aer import AerSimulator
-import random
+from qiskit_aer.noise import NoiseModel, depolarizing_error
 
 
 def prepare_state(qc: QuantumCircuit, bit: int, basis: str) -> None:
-    """Pripravi stanje BB84 iz začetnega |0>."""
+    """Pripravi stanje iz začetnega |0>."""
     if bit == 1:
         qc.x(0)
     if basis == "X":
@@ -30,10 +31,17 @@ def measure_state(qc: QuantumCircuit, basis: str) -> None:
     qc.measure(0,0)
 
 
-def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None = None) -> int:
+def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None = None, noise_level: float = 0.0) -> int:
+    """prenos kubita med alice in bobom (eve je lahko prisotna ali pa ne)"""
 
     # Ustvari kvantno vezje z 1 kubitom in 2 klasičnima bitoma - prvi je za boba, drugi za eve, da se vanj shranjujejo vrednosti emritev enega qubita ki ga imamo
     qc = QuantumCircuit(1, 2) 
+
+    noise_model = NoiseModel() #prazen model šuma
+    
+    error = depolarizing_error(noise_level, 1) #depolarizacijska napaka velikosti noise_level, na edinem kubitu v vezju
+    
+    noise_model.add_all_qubit_quantum_error(error, ["id"]) #uporabi napako error na vsaki operaciji vrste id, ne glede na indeks kubita
 
     #Alice pripravi kubit
     prepare_state(qc, bit, alice_basis)
@@ -41,11 +49,14 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None =
     if eve_basis is not None:
         interception(qc, eve_basis)
 
+    #uporabimo id vrata na katerih se zgodi šum - v prenosu je samo en šum, ne npr na vsakih vratih
+    qc.id(0)
+
     #Bob izmeri kubit
     measure_state(qc, bob_basis)
 
     # Izvede vezje s simulatorjem (shots=1) - izvede se en prenos kubita med alice in bobom
-    simulator = AerSimulator()
+    simulator = AerSimulator(noise_model=noise_model) #simulator, ki upošteva model šuma
     result = simulator.run(qc, shots=1, memory=True).result()
 
     # Pridobmo Bobov izmerjeni bit
@@ -55,7 +66,7 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None =
     return int(bob_measured_bit)
 
 
-def run_bb84(n: int, interception_rate: float = 0.0) -> list[dict]:
+def run_bb84(n: int, interception_rate: float = 0.0, noise_level: float = 0.0) -> list[dict]:
     """Simulira n prenosov protokola BB84."""
     transmissions = []
 
@@ -76,7 +87,7 @@ def run_bb84(n: int, interception_rate: float = 0.0) -> list[dict]:
         bob_basis = random.choice(["X", "Z"])
 
         # prenos
-        measured_bit = transmit(bit, alice_basis, bob_basis, eve_basis)
+        measured_bit = transmit(bit, alice_basis, bob_basis, eve_basis, noise_level)
 
         measurement = {
                 "alice_bit": bit,
@@ -100,24 +111,3 @@ def sift_transmissions(transmissions: list[dict]) -> list[dict]:
             sifted.append(transmission)
 
     return sifted
-
-
-def calculate_qber(sifted: list[dict]) -> float:
-    """Izračuna delež napak med obdržanimi biti."""
-    if not sifted:
-        raise ValueError("No sifted bits available")
-
-    errors = 0
-
-    for transmission in sifted:
-        if transmission["alice_bit"] != transmission["bob_bit"]:
-            errors += 1
-
-    return errors / len(sifted)
-
-if __name__ == "__main__":
-    for rate in [0.0, 0.2, 0.5, 1.0]:
-        transmissions = run_bb84(1000, interception_rate=rate)
-        sifted = sift_transmissions(transmissions)
-    
-        print(f"Interception: {rate:.0%}, QBER: {calculate_qber(sifted):.2%}")

@@ -50,7 +50,12 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, simulator: AerSimulator
     measure_state(qc, bob_basis)
 
     # Izvede vezje s simulatorjem (shots=1) - izvede se en prenos kubita med alice in bobom
-    result = simulator.run(qc, shots=1, memory=True).result()
+    result = simulator.run(
+            qc,
+            shots=1,
+            memory=True,
+            seed_simulator=random.randrange(1, 2**31),
+        ).result()
 
     # Pridobmo Bobov izmerjeni bit
     memory = result.get_memory(qc)[0] #vrne npr. "10", kjer je 1 bit ki ga je izmerila eve, 0 pa bit ki ga je izmeril bob

@@ -8,9 +8,7 @@ def prepare_state(qc: QuantumCircuit, bit: int, basis: str) -> None:
     if bit == 1:
         qc.x(0)
     if basis == "X":
-        qc.h(0)
-    else:
-        pass   
+        qc.h(0)  
 
 
 def interception(qc: QuantumCircuit, basis: str) -> None:
@@ -26,11 +24,10 @@ def interception(qc: QuantumCircuit, basis: str) -> None:
 
 def measure_state(qc: QuantumCircuit, basis: str) -> None:
     """Izmeri kubit v izbrani bazi."""
-    if basis == "Z":
-        qc.measure(0,0)
-    else:
+    if basis == "X":
         qc.h(0)
-        qc.measure(0,0)
+
+    qc.measure(0,0)
 
 
 def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None = None) -> int:
@@ -58,7 +55,7 @@ def transmit(bit: int, alice_basis: str, bob_basis: str, eve_basis: str | None =
     return int(bob_measured_bit)
 
 
-def run_bb84(n: int, intercepted: bool = False) -> list[dict]:
+def run_bb84(n: int, interception_rate: float = 0.0) -> list[dict]:
     """Simulira n prenosov protokola BB84."""
     transmissions = []
 
@@ -70,7 +67,7 @@ def run_bb84(n: int, intercepted: bool = False) -> list[dict]:
         alice_basis = random.choice(["X", "Z"])
 
         # Eve prestreže vsak kubit in naključno izbere merilno bazo
-        if intercepted:
+        if random.random() < interception_rate:
             eve_basis = random.choice(["X", "Z"])
         else:
             eve_basis = None
@@ -118,14 +115,9 @@ def calculate_qber(sifted: list[dict]) -> float:
 
     return errors / len(sifted)
 
-
-normal = sift_transmissions(run_bb84(1000))
-attacked = sift_transmissions(run_bb84(1000, intercepted=True))
-
-print("Brez Eve:")
-print("Obdržanih bitov:", len(normal))
-print("QBER:", calculate_qber(normal))
-
-print("\nZ Eve:")
-print("Obdržanih bitov:", len(attacked))
-print("QBER:", calculate_qber(attacked))
+if __name__ == "__main__":
+    for rate in [0.0, 0.2, 0.5, 1.0]:
+        transmissions = run_bb84(1000, interception_rate=rate)
+        sifted = sift_transmissions(transmissions)
+    
+        print(f"Interception: {rate:.0%}, QBER: {calculate_qber(sifted):.2%}")

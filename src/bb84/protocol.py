@@ -92,3 +92,24 @@ sifted = sift_transmissions(transmissions)
 
 print("Vsi prenosi:", len(transmissions))
 print("Obdržani prenosi:", len(sifted))
+
+
+def calculate_qber(sifted: list[dict]) -> float:
+    """Izračuna delež napak med obdržanimi biti."""
+    if not sifted:
+        raise ValueError("No sifted bits available")
+
+    errors = 0
+
+    for transmission in sifted:
+        if transmission["alice_bit"] != transmission["bob_bit"]:
+            errors += 1
+
+    return errors / len(sifted)
+
+transmissions = run_bb84(1000)
+sifted = sift_transmissions(transmissions)
+
+print("Prenosi:", len(transmissions))
+print("Obdržani biti:", len(sifted))
+print("QBER:", calculate_qber(sifted))

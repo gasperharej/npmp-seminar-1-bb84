@@ -8,7 +8,6 @@ from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import matplotlib
-import numpy as np
 
 matplotlib.use("Agg")  # Grafi se shranijo v datoteke, tudi brez odprtega namizja
 import matplotlib.pyplot as plt
@@ -229,108 +228,6 @@ def summarize_results(results_dir: Path = RESULTS_DIR) -> pd.DataFrame:
     return summary
 
 
-def analyze_h3(
-    target_tpr: float = 0.95,
-    max_sample_size: int = 50_000,
-    results_dir: Path = RESULTS_DIR,
-    formats: tuple[str, ...] = ("png",),
-) -> pd.DataFrame:
-    """Poišče najmanjši kontrolni vzorec za zahtevano uspešnost zaznavanja."""
-
-    if not 0 < target_tpr < 1 or not isinstance(max_sample_size, int) or max_sample_size < 1:
-        raise ValueError("Use 0 < target_tpr < 1 and a positive integer max_sample_size")
-    results_dir.mkdir(parents=True, exist_ok=True)
-    results = []
-
-    # Preverimo vse velikosti kontrolnega vzorca do določene meje
-    sample_sizes = np.arange(1, max_sample_size + 1)
-
-    for noise_level in NOISE_LEVELS:
-        q0 = noise_level / 2  # Pričakovani QBER brez Eve
-
-        # Najmanjše število napak, pri katerem binomski test sproži alarm
-        critical_errors = binom.ppf(1 - ALPHA, sample_sizes, q0).astype(int) + 1
-        # Popravek numerične meje: enaka primerjava repa kot pri eksaktnem testu.
-        while np.any(binom.sf(critical_errors - 2, sample_sizes, q0) <= ALPHA):
-            critical_errors -= binom.sf(critical_errors - 2, sample_sizes, q0) <= ALPHA
-        while np.any(binom.sf(critical_errors - 1, sample_sizes, q0) > ALPHA):
-            critical_errors += binom.sf(critical_errors - 1, sample_sizes, q0) > ALPHA
-
-        # Teoretična verjetnost lažnega alarma za vsako velikost vzorca
-        fpr = binom.sf(critical_errors - 1, sample_sizes, q0)
-
-        for interception_rate in INTERCEPTION_RATES:
-            if interception_rate == 0:
-                continue  # Brez Eve ni TPR, zato tega scenarija ne vključimo
-
-            # Pričakovani QBER pri delnem prestrezanju Eve
-            q1 = q0 + (1 - noise_level) * interception_rate / 4
-
-            # Teoretična verjetnost zaznave pri posamezni velikosti vzorca
-            tpr = binom.sf(critical_errors - 1, sample_sizes, q1)
-
-            # Poiščemo vse velikosti, ki dosegajo zahtevani TPR in FPR
-            valid = np.flatnonzero((tpr >= target_tpr) & (fpr <= ALPHA))
-
-            if len(valid) > 0:
-                index = valid[0]  # Prva ustrezna velikost je najmanjša
-                min_size = int(sample_sizes[index])
-                actual_tpr = float(tpr[index])
-                actual_fpr = float(fpr[index])
-            else:
-                min_size = None  # Zahtevana uspešnost ni dosežena do max_sample_size
-                actual_tpr = None
-                actual_fpr = None
-
-            results.append(
-                {
-                    "qber_without_eve": q0,
-                    "interception_rate": interception_rate,
-                    "min_sample_size": min_size,
-                    "theoretical_tpr": actual_tpr,
-                    "theoretical_fpr": actual_fpr,
-                    "target_tpr": target_tpr,
-                    "max_sample_size": max_sample_size,
-                }
-            )
-
-    # Shranimo tabelo minimalnih velikosti kontrolnega vzorca
-    summary = pd.DataFrame(results)
-    summary.to_csv(results_dir / "h3_min_sample.csv", index=False)
-
-    # Graf: potrebna velikost vzorca glede na šum in intenzivnost napada
-    plt.figure()
-
-    for eve_rate in INTERCEPTION_RATES:
-        if eve_rate == 0:
-            continue
-
-        subset = summary[summary.interception_rate == eve_rate]
-
-        plt.plot(
-            subset.qber_without_eve * 100,
-            subset.min_sample_size,
-            marker="o",
-            label=f"Eve={eve_rate:.0%}",
-        )
-
-    plt.xlabel("Osnovni QBER brez Eve (%)")
-    plt.ylabel("Najmanjši kontrolni vzorec m (logaritemska skala)")
-    plt.yscale("log")  # Velikosti se razlikujejo za več velikostnih redov
-    plt.xticks([level / 2 * 100 for level in NOISE_LEVELS])
-    plt.title(f"H3: teoretični minimum za TPR ≥ {target_tpr:.0%}, FPR ≤ {ALPHA:.0%}")
-    plt.legend(title="Delež prestrezanja", fontsize="small")
-    plt.grid(alpha=0.25)
-    plt.tight_layout()
-    _save_figure(results_dir / "h3_min_sample", formats)
-    plt.close()
-
-    print("\nH3 - minimalne velikosti kontrolnih vzorcev:")
-    print(summary.to_string(index=False))
-
-    return summary
-
-
 def _plot_rate(x, subset: pd.DataFrame, label: str) -> None:
     """Monte Carlo ocena z Wilsonovim intervalom in teorija istega testa."""
     line = plt.errorbar(
@@ -427,7 +324,6 @@ def main() -> None:
         run_experiments(args.repetitions, args.workers, args.output_dir)
     summary = summarize_results(args.output_dir)
     make_plots(summary, args.output_dir)
-    analyze_h3(results_dir=args.output_dir)
     print(f"\nRezultati in grafi so shranjeni v: {args.output_dir.resolve()}")
 
 

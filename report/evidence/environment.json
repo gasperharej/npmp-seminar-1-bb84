@@ -1,0 +1,18 @@
+{
+  "purpose": "Additional QC requirements; separate from the original H1/H2 experiment",
+  "python": "3.14.4",
+  "packages": {
+    "qiskit": "2.6.2",
+    "qiskit-aer": "0.18.2",
+    "scipy": "1.18.1"
+  },
+  "ideal_comparison": "One session of 6000 signals per setting; shots=1 per circuit",
+  "circuit_diagnostics": {
+    "backend": "AerSimulator with depolarizing_error(0.2, 1) on id",
+    "optimization_level": 0,
+    "seed_transpiler": 20261121,
+    "hardware_jobs": "None; no real quantum processor used",
+    "original_experiment": "Circuits submitted directly to Aer, without transpile"
+  },
+  "optimization_pitfall": "Separate 10000-shot circuits; compare levels 0, 1 and 3"
+}

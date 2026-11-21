@@ -1,0 +1,15 @@
+{
+  "source_directory": "results/final-figures",
+  "figure_generation_time_utc": "2026-11-08T20:23:15.821852+00:00",
+  "original_trials_sha256": "231c5b09eba7e5f33588bdcb7183052c382c61e03e5e192385e3a8f113ced45c",
+  "original_trials": 50000,
+  "original_simulation_environment": "Not recorded in source CSV",
+  "copied_files_sha256": {
+    "fpr_vs_sample.pdf": "5f9119a9d0e80ba17f355afac5d83695608032837d6740a9022f59137a624fd1",
+    "h1_h2_summary.csv": "d248f0452de79190c06a5775f000c59319edaa57d04b99bf5778394f10812883",
+    "h1_tpr_vs_sample.pdf": "f3335635e8be428b74157730ed7b6358a36cf799d53cf3ea5d3460916ddd3c3a",
+    "h2_tpr_vs_noise.pdf": "4800156334bc7ac5dcf7014d60321898cd090d5073dcb551c8867cabe27a4c29",
+    "h3_min_sample.csv": "2d84fbfb005723be81ad225568f023976d3ad43978e257735ee308455d35fffb",
+    "h3_min_sample.pdf": "52d35264389be0115bd74c4edbd9283f961b09ea685b9549efb42db2d137b0ec"
+  }
+}

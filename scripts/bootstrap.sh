@@ -55,7 +55,7 @@ for package in ('bb84-seminar', 'qiskit', 'qiskit-aer', 'numpy', 'pandas', 'matp
     module = {'bb84-seminar': 'bb84', 'qiskit-aer': 'qiskit_aer'}.get(package, package)
     importlib.import_module(module)
     print(f'{package}: {version(package)}')
-print('Uvozi paketov so uspešni; paket bb84 je prazen.')
+print('Uvozi paketov so uspešni; simulator bb84 je pripravljen.')
 PY
 
 printf '%s\n' 'Okolje je pripravljeno. Preglejte .envrc in enkrat izvedite: direnv allow .'

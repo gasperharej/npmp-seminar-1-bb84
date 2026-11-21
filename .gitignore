@@ -23,3 +23,17 @@ figures/
 .download-*
 *.pem
 *.key
+
+# Lokalni LaTeX in pomožne datoteke; izvor in PDF slike poročila ostanejo sledljivi.
+.tools/
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.out
+*.synctex.gz
+*.toc

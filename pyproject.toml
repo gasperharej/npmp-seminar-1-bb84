@@ -25,7 +25,8 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 addopts = "-ra"
-norecursedirs = [".venv", ".direnv", ".cache", "literature"]
+testpaths = ["tests"]
+norecursedirs = [".venv", ".direnv", ".cache", ".uv-cache", "literature"]
 
 [tool.ruff]
 target-version = "py311"

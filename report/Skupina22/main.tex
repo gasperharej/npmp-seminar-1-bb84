@@ -6,24 +6,147 @@
 \author{Gašper Harej}
 \maketitle
 
+
+
 \abstract{
-
+V raziskavi smo preverili, kako stopnja šuma
+in velikost kontrolnega vzorca vplivata na
+zaznavanje prisluškovanja v protokolu BB84.
+S knjižnico Qiskit Aer smo simulirali
+delno prestrezanje kvbitov in depolarizacijski
+šum. Izvedli smo 50.000 ponovitev protokola
+pri različnih kombinacijah parametrov.
+Za zaznavanje prisluškovanja smo uporabili
+eksaktni binomski test. Pri 20-\% prestrezanju
+in kontrolnem vzorcu 300 bitov se je delež
+pravilnih zaznav ob povečanju osnovnega
+QBER s 3\,\% na 25\,\% zmanjšal s
+97,75\,\% na 24,70\,\%.
+Rezultati kažejo, da večji kontrolni vzorci
+izboljšujejo zaznavanje prisluškovanja,
+večji šum pa ga otežuje.
 }
-
-\section{Uvod}
-\label{g22:sec:uvod}
 
 \subsection{Kvantna distribucija ključev in protokol BB84}
 \label{g22:sec:qkd-bb84}
 
+Kvantna distribucija ključev (angl. \textit{Quantum
+Key Distribution}, QKD) omogoča izmenjavo
+skrivnega ključa z uporabo kvantnih stanj.
+Eden prvih protokolov za kvantno distribucijo
+ključev je BB84, ki sta ga leta 1984
+predstavila Bennett in Brassard
+\cite{g22:bennett1984bb84}.
+
+Pri protokolu BB84 Alice pošilja kvbite,
+Bob pa jih meri, pri čemer oba naključno
+izbirata med dvema bazama. Po prenosu
+primerjata uporabljene baze in obdržita
+le bite, pri katerih sta izbrala enako bazo.
+Del teh bitov nato primerjata, da bi preverila,
+ali je med prenosom prišlo do prisluškovanja
+\cite{g22:bennett1984bb84}.
+
+
+
 \subsection{Prisluškovanje in vpliv šuma}
 \label{g22:sec:prisluskovanje-sum}
+
+Pri protokolu BB84 lahko Alice in Bob zaznata
+prisluškovanje, ker lahko Eve z merjenjem kvbitov
+spremeni njihovo stanje in tako povzroči napake.
+Eden izmed načinov prisluškovanja je napad
+s prestrezanjem in ponovnim pošiljanjem
+(angl. \textit{intercept-resend}), pri katerem
+Eve prestrežene kvbite izmeri in jih nato
+pošlje Bobu \cite{g22:lee2023detection}.
+
+Vendar napake ne nastajajo samo zaradi
+prisluškovanja. Tudi šum v kvantnem kanalu
+in nepopolnosti naprav lahko povzročijo
+napake, čeprav Eve ni prisotna
+\cite{g22:lee2023detection}.
+Zato iz posamezne napake še ne moremo
+sklepati, ali je prišlo do prisluškovanja.
+Pri zaznavanju moramo upoštevati tako
+pričakovani delež napak zaradi šuma kot
+tudi število bitov, ki jih Alice in Bob
+preverita.
+
+
 
 \subsection{Sorodne raziskave}
 \label{g22:sec:sorodne}
 
-\subsection{Raziskovalno vprašanje in hipoteze H1--H3}
+Z zaznavanjem prisluškovanja v protokolu BB84
+se je ukvarjalo več raziskav.
+\citet{g22:mina2020scalable} sta s pomočjo
+knjižnice Qiskit simulirala protokol BB84
+in napad s prestrezanjem in ponovnim pošiljanjem.
+V idealnem kanalu brez šuma sta raziskovala,
+kako število preverjenih bitov vpliva na
+verjetnost zaznave prisluškovanja.
+
+\citet{g22:lee2023detection} so raziskavo
+razširili na delno prestrezanje v šumnem
+kvantnem kanalu. Predstavili so statistični
+način zaznavanja prisluškovanja, pri katerem
+so preučevali vpliv šuma, velikosti kontrolnega
+vzorca in izbire praga zaznavanja.
+
+Podobno so \citet{g22:fiorini2024estimating}
+s pomočjo šumnih kvantnih simulatorjev
+raziskovali delno prestrezanje v protokolu
+BB84. Osredotočili so se predvsem na
+ocenjevanje deleža prestreženih kvbitov
+na podlagi opaženih napak.
+
+V naši raziskavi smo se osredotočili na
+vpliv šuma in velikosti kontrolnega vzorca
+na verjetnost zaznavanja prisluškovanja.
+Za odločanje smo uporabili eksaktni
+binomski test in preverili njegovo uspešnost
+pri različnih pogojih.
+
+
+
+\subsection{Raziskovalno vprašanje in hipotezi}
 \label{g22:sec:vprasanje-hipoteze}
+
+V tej raziskavi želimo ugotoviti, kako šum
+v kvantnem kanalu in velikost kontrolnega
+vzorca vplivata na uspešnost zaznavanja
+prisluškovanja v protokolu BB84.
+
+Zastavili smo si naslednje raziskovalno
+vprašanje: Kako stopnja kvantnega šuma in
+velikost kontrolnega vzorca vplivata na
+verjetnost pravilnega zaznavanja
+prisluškovanja v protokolu BB84?
+
+Na podlagi tega smo oblikovali dve hipotezi:
+
+\begin{description}
+    \item[H1:] Pri enaki stopnji šuma in
+    enakem deležu prestrezanja večji
+    kontrolni vzorci praviloma omogočajo
+    uspešnejše zaznavanje prisluškovanja.
+
+    \item[H2:] Pri enaki velikosti
+    kontrolnega vzorca in enakem deležu
+    prestrezanja večji šum praviloma
+    zmanjšuje uspešnost zaznavanja
+    prisluškovanja.
+\end{description}
+
+Hipotezi smo preverili s simulacijami
+protokola BB84, pri katerih smo spreminjali
+stopnjo šuma, delež prestrezanja in
+velikost kontrolnega vzorca. Uspešnost
+zaznavanja smo ocenili z deležem
+pravilnih zaznav (TPR), spremljali pa
+smo tudi delež lažnih zaznav (FPR).
+
 
 
 \section{Metode}
@@ -269,7 +392,7 @@ manj izrazit, kar lahko oteži njegovo zaznavanje.
 
     Po uskladitvi baz Alice in Bob izmed ohranjenih bitov
     naključno izbereta $m$ bitov, ki sestavljajo kontrolni
-    vzorec \cite{g22:fiorini2024estimating}.
+    vzorec \cite{g22:lee2023detection, g22:fiorini2024estimating}.
     Na izbranih mestih primerjata vrednosti svojih
     bitov in preštejeta število neskladij $k$.
     Opaženi delež bitnih napak v kontrolnem vzorcu
@@ -535,7 +658,7 @@ vseh prikazanih rezultatih $m=300$.
 
 \begin{figure}[htbp]
     \centering
-    \includegraphics[width=\linewidth]
+    \includegraphics[width=0.8 \linewidth]
         {Skupina22/img/h2_tpr_vs_noise.pdf}
     \caption{Vpliv osnovnega QBER na delež
     pravilnih zaznav pri kontrolnem vzorcu
@@ -578,24 +701,124 @@ nekoliko razlikujejo od teoretičnih napovedi.
 
 
 
+
+
 \section{Razprava}
 \label{g22:sec:razprava}
 
 \subsection{Interpretacija in primerjava z literaturo}
 \label{g22:sec:interpretacija}
 
+Rezultati kažejo, da večji kontrolni vzorci omogočajo uspešnejše zaznavanje prisluškovanja, kar je skladno s prvo hipotezo. Če preverimo več bitov, lahko
+lažje ugotovimo, ali so napake posledica samo
+šuma ali tudi prisluškovanja. Kljub temu pa
+večji vzorec ne zagotavlja, da bomo prisluškovanje
+vedno zaznali, predvsem pri višjih stopnjah šuma.
+
+Do podobne ugotovitve sta prišla tudi
+\citet{g22:mina2020scalable}, ki sta pokazala,
+da se verjetnost zaznave prisluškovanja
+povečuje s številom preverjenih bitov.
+Za razliko od naše raziskave sta obravnavala
+idealen kanal brez šuma in popolno prestrezanje.
+
+
+Rezultati kažejo tudi, da večji šum otežuje
+zaznavanje prisluškovanja, kar je skladno
+z drugo hipotezo. Ker šum povzroča napake
+tudi brez prisotnosti Eve, je dodatne napake
+zaradi prisluškovanja težje prepoznati.
+To potrjuje tudi enačba~\eqref{g22:eq:qber_difference},
+ki kaže, da se z večanjem šuma zmanjšuje
+razlika med pričakovanim QBER z Eve in brez nje.
+
+Podobno so ugotovili tudi
+\citet{g22:lee2023detection}, ki so pokazali,
+da večja stopnja napak v kanalu zmanjšuje
+natančnost zaznavanja prisluškovanja.
+Ker so uporabili drugačen model napak in
+drugačen način določanja praga zaznavanja,
+njihovih številčnih rezultatov ne moremo
+neposredno primerjati z našimi.
+
+
+Tudi \citet{g22:fiorini2024estimating}
+so raziskovali delno prestrezanje v protokolu
+BB84 ob prisotnosti šuma. Ugotovili so,
+da je mogoče iz opaženih napak oceniti,
+kolikšen delež kvbitov je prestregla Eve,
+pri čemer so bile ocene natančnejše pri
+daljših zaporedjih poslanih kvbitov.
+V naši raziskavi pa nismo poskušali
+oceniti deleža prestrezanja, temveč
+ugotoviti, kako velikost kontrolnega vzorca
+in šum vplivata na uspešnost zaznavanja
+prisluškovanja.
+
+
 \subsection{Omejitve modela}
 \label{g22:sec:omejitve}
+
+Pri raziskavi smo uporabili poenostavljen model
+kvantnega kanala. Upoštevali smo samo
+depolarizacijski šum, pripravo kvantnih stanj
+in meritve pa smo obravnavali kot idealne.
+V resničnih sistemih lahko napake nastajajo
+tudi zaradi nepopolnih naprav in drugih motenj
+\cite{g22:lee2023detection}. Zato naši rezultati
+ne zajamejo vseh dejavnikov, ki lahko vplivajo
+na zaznavanje prisluškovanja.
+
+Poleg tega smo predpostavili, da poznamo
+pričakovani QBER brez prisluškovanja,
+ki smo ga izračunali iz izbrane stopnje šuma.
+Naš statistični test temelji na tej vrednosti,
+zato bi njena napačna ocena lahko vplivala
+na zanesljivost zaznavanja prisluškovanja.
+
 
 \subsection{Kaj ni delovalo}
 \label{g22:sec:neuspehi}
 
 
+
 \section{Zaključek}
 \label{g22:sec:zakljucek}
 
+V raziskavi smo s simulacijo protokola BB84
+preverili, kako šum in velikost kontrolnega
+vzorca vplivata na uspešnost zaznavanja
+prisluškovanja. Ugotovili smo, da večji
+kontrolni vzorci praviloma izboljšajo
+zaznavanje, medtem ko ga večji šum otežuje.
+Rezultati tako podpirajo obe zastavljeni
+hipotezi.
+
+Pokazali smo tudi, da lahko z eksaktnim
+binomskim testom zaznavamo prisluškovanje
+ob omejeni verjetnosti lažnih zaznav.
+Kljub temu pri visokih stopnjah šuma in
+manjših kontrolnih vzorcih prisluškovanja
+pogosto ne zaznamo.
+
+Raziskavo bi lahko nadaljevali z uporabo
+bolj realističnih modelov šuma in preverjanjem
+drugih vrst napadov. Zanimivo bi bilo tudi
+preučiti, kako izbira velikosti kontrolnega
+vzorca vpliva na količino bitov, ki ostanejo
+za izdelavo končnega skrivnega ključa.
+
+
+
 
 \section*{Doprinosi avtorjev}
+
+Gašper Harej je zasnoval raziskavo in pripravil
+simulacijo protokola BB84 z modelom šuma in
+prisluškovanja. Izvedel je eksperimente,
+analiziral rezultate ter pripravil grafe
+in besedilo seminarske naloge.
+
 
 
 

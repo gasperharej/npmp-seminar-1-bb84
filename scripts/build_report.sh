@@ -8,7 +8,7 @@ if [[ -x "$bb84_tex_bin/latexmk" ]]; then
     export PATH="$bb84_tex_bin:$PATH"
 fi
 if ! command -v latexmk >/dev/null 2>&1; then
-    printf '%s\n' 'Najprej izvedite: bash scripts/setup_latex.sh' >&2
+    printf '%s\n' 'Manjka latexmk. Namestite TeX Live z orodjem latexmk.' >&2
     exit 1
 fi
 cd -- "$bb84_root/report"

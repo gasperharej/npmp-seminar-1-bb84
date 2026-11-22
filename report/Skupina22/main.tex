@@ -27,6 +27,9 @@ izboljšujejo zaznavanje prisluškovanja,
 večji šum pa ga otežuje.
 }
 
+\section{Uvod}
+\label{g22:sec:uvod}
+
 \subsection{Kvantna distribucija ključev in protokol BB84}
 \label{g22:sec:qkd-bb84}
 
@@ -87,12 +90,12 @@ V idealnem kanalu brez šuma sta raziskovala,
 kako število preverjenih bitov vpliva na
 verjetnost zaznave prisluškovanja.
 
-\citet{g22:lee2023detection} so raziskavo
-razširili na delno prestrezanje v šumnem
-kvantnem kanalu. Predstavili so statistični
-način zaznavanja prisluškovanja, pri katerem
-so preučevali vpliv šuma, velikosti kontrolnega
-vzorca in izbire praga zaznavanja.
+\citet{g22:lee2023detection} so obravnavali
+delno prestrezanje v šumnem kvantnem kanalu.
+Predstavili so statistični način zaznavanja
+prisluškovanja, pri katerem so preučevali
+vpliv šuma, velikosti kontrolnega vzorca
+in izbire praga zaznavanja.
 
 Podobno so \citet{g22:fiorini2024estimating}
 s pomočjo šumnih kvantnih simulatorjev
@@ -113,15 +116,11 @@ pri različnih pogojih.
 \subsection{Raziskovalno vprašanje in hipotezi}
 \label{g22:sec:vprasanje-hipoteze}
 
-V tej raziskavi želimo ugotoviti, kako šum
-v kvantnem kanalu in velikost kontrolnega
-vzorca vplivata na uspešnost zaznavanja
-prisluškovanja v protokolu BB84.
 
 Zastavili smo si naslednje raziskovalno
-vprašanje: Kako stopnja kvantnega šuma in
-velikost kontrolnega vzorca vplivata na
-verjetnost pravilnega zaznavanja
+vprašanje: Kako stopnja kvantnega šuma
+in velikost kontrolnega vzorca vplivata
+na verjetnost pravilnega zaznavanja
 prisluškovanja v protokolu BB84?
 
 Na podlagi tega smo oblikovali dve hipotezi:
@@ -155,10 +154,22 @@ smo tudi delež lažnih zaznav (FPR).
 \subsection{Implementacija BB84 v Qiskit Aer}
 \label{g22:sec:orodja}
 
-    Za raziskovanje vpliva šuma in velikosti kontrolnega vzorca na zaznavanje prisluškovanja je bila simulacija protokola BB84 implementirana v programskem jeziku Python s pomočjo knjižnice Qiskit Aer \cite{g22:aer-documentation}. 
-    Simulacija temelji na zaporednih prenosih posameznih kvantnih bitov, pri katerih sta priprava stanja in meritev predstavljeni s kvantnim vezjem.
 
-    Za kodiranje posameznega klasičnega bita se uporabljata dve medsebojno nepristranski bazi: računsko bazo \(Z=\{\ket{0},\ket{1}\}\) in diagonalno bazo \(X=\{\ket{+},\ket{-}\}\), kjer velja,
+    Za raziskovanje vpliva šuma in velikosti
+    kontrolnega vzorca na zaznavanje prisluškovanja
+    smo protokol BB84 simulirali v Pythonu
+    s knjižnico Qiskit Aer
+    \cite{g22:aer-documentation}.
+    Vse simulacije smo izvedli z različicami
+    Python 3.14.4, Qiskit 2.6.2,
+    Qiskit Aer 0.18.2 in SciPy 1.18.1.
+
+    Simulacija temelji na zaporednih prenosih
+    posameznih kvantnih bitov, pri katerih
+    sta priprava stanja in meritev
+    predstavljeni s kvantnim vezjem.
+
+    Za kodiranje posameznega klasičnega bita se uporabljata dve medsebojno nepristranski bazi: računska baza \(Z=\{\ket{0},\ket{1}\}\) in diagonalna baza \(X=\{\ket{+},\ket{-}\}\), kjer velja,
     da meritev stanja, pripravljenega v eni bazi, v drugi bazi z enako verjetnostjo vrne katerega koli od obeh možnih izidov \cite{g22:mina2020scalable, g22:lee2023detection}.
     V simulaciji stanja pripravimo s kvantnima vratoma \(X\) in \(H\). 
     Alice za vsak prenos naključno izbere klasični bit $b \in \{0,1\}$ in bazo $B \in \{Z,X\}$. Kvbit je na začetku pripravljen v stanju $\ket{0}$,
@@ -198,7 +209,7 @@ smo tudi delež lažnih zaznav (FPR).
 
 
     Qiskit Aer omogoča tudi simulacijo različnih modelov šuma brez uporabe fizičnega kvantnega procesorja, kar omogoča nadzorovano raziskovanje vpliva šuma na zaznavanje prisluškovanja.
-    Vsak kvbit simuliramo z ločenim enokubitnim vezjem, ki ga izvedemo z eno meritvijo (\texttt{shots=1}). S tem lahko ponavljamo celoten protokol pri različnih eksperimentalnih pogojih.
+    Vsak kvbit simuliramo z ločenim enokubitnim vezjem, ki ga izvedemo enkrat (\texttt{shots=1}). S tem lahko ponavljamo celoten protokol pri različnih eksperimentalnih pogojih.
 
 \subsection{Model prestrezanja in depolarizacijski šum}
 \label{g22:sec:model}
@@ -284,7 +295,7 @@ smo tudi delež lažnih zaznav (FPR).
         \label{g22:eq:depolarizing}
     \end{equation}
 
-    kjer je $\rho$ gostotna matrika stanja kvbita pred delovanjem šuma, $I$ identitetna matrika, $\lambda$ pa parameter depolarizacije \cite{g22:aer-documentation}.
+    kjer je $\rho$ gostotna matrika stanja kvbita pred delovanjem šuma, $I$ identitetna matrika, $\lambda$ pa parameter depolarizacije \cite{g22:aer-depolarizing}.
 
     Za primer vzemimo kvbit, pripravljen v stanju $\ket{0}$, ki ga lahko predstavimo z gostotno matriko
     $\rho=\ket{0}\bra{0}=
@@ -404,7 +415,6 @@ manj izrazit, kar lahko oteži njegovo zaznavanje.
     \end{equation}
 
 
-%verjetno bo ta del treba malo skrajšati%
 Ker so kvantne meritve naključne, se lahko opaženi
 delež napak $\hat{q}$ razlikuje od pričakovanega
 deleža $q_0$, tudi kadar Eve ni prisotna.
@@ -443,7 +453,7 @@ opišemo z binomsko porazdelitvijo
     \sim \operatorname{Bin}(m,q_0).
     \label{g22:eq:binomial-model}
 \end{equation}
-%%
+
 
 
 Na podlagi binomske porazdelitve lahko preverimo, ali je
@@ -463,7 +473,7 @@ izračunamo z izrazom
 
 Za izračun p-vrednosti smo uporabili funkcijo
 \texttt{binomtest} iz knjižnice SciPy, ki izvede
-eksaktni binomski test. Ta verjetnost izračuna
+eksaktni binomski test. P-vrednost se izračuna
 neposredno iz binomske porazdelitve, zato
 približek z normalno porazdelitvijo ni potreben.
 To je posebej uporabno pri manjših kontrolnih
@@ -503,7 +513,9 @@ in veljajo predpostavke našega modela.
     kako povečevanje šuma vpliva na zaznavanje
     prisluškovanja.
 
-    Delež prestreženih kvbitov smo spreminjali med
+
+    Verjetnost prestrezanja posameznega kvbita
+    smo spreminjali med
     $r \in \{0;\ 0{,}10;\ 0{,}20;\ 0{,}50;\ 1\}$.
     Vrednost $r=0$ predstavlja prenos brez Eve,
     $r=1$ pa prestrezanje vseh kvbitov.
@@ -613,8 +625,9 @@ vzorca vpliva na uspešnost zaznavanja
 prisluškovanja. Na sliki~\ref{g22:fig:h1}
 je prikazan TPR pri različnih velikostih
 kontrolnega vzorca in stopnjah šuma.
-Delež prestreženih kvbitov je bil pri
-vseh prikazanih rezultatih $r=0{,}20$.
+Verjetnost prestrezanja posameznega kvbita
+je bila pri vseh prikazanih rezultatih
+$r=0{,}20$.
 
 \begin{figure}[htbp]
     \centering
@@ -675,8 +688,9 @@ Pri $20\,\%$ prestrezanju se je TPR zmanjšal
 s $97{,}75\,\%$ pri osnovnem QBER $3\,\%$
 na $24{,}70\,\%$ pri osnovnem QBER $25\,\%$.
 
-Vpliv šuma je izrazitejši pri manjših deležih
-prestrezanja. Pri $100\,\%$ prestrezanju pa
+Pri delnem prestrezanju lahko povečanje šuma
+močno zmanjša uspešnost zaznavanja.
+ Pri $100\,\%$ prestrezanju pa
 je test prisluškovanje zaznal v skoraj vseh
 simulacijah tudi pri najvišji stopnji šuma.
 Podobno kot pri prejšnjem eksperimentu se
@@ -693,9 +707,12 @@ prisluškovanja, kadar Eve ni bila prisotna
 velikosti kontrolnega vzorca je bil izmerjeni
 FPR med $1{,}4\,\%$ in $4{,}75\,\%$.
 
-Nobena izmerjena vrednost ni presegla izbrane
-meje $5\,\%$, kar je skladno s pričakovanim
-delovanjem statističnega testa. Izmerjene
+
+V vseh obravnavanih kombinacijah je bil
+izmerjeni FPR manjši od $5\,\%$,
+kar je skladno s teoretično omejitvijo
+verjetnosti lažnega alarma pri
+$\alpha=0{,}05$. Izmerjene
 vrednosti se zaradi naključnosti simulacij
 nekoliko razlikujejo od teoretičnih napovedi.
 
@@ -779,6 +796,21 @@ na zanesljivost zaznavanja prisluškovanja.
 
 \subsection{Kaj ni delovalo}
 \label{g22:sec:neuspehi}
+
+
+Pri prvi izvedbi simulacije smo za vsak
+prenos kvbita na novo ustvarili simulator
+in model šuma. Pri velikem številu prenosov
+je tak pristop zahteval veliko nepotrebnega
+ponavljanja inicializacije simulatorja.
+
+Zato smo implementacijo spremenili tako,
+da simulator in model šuma ustvarimo samo
+enkrat na ponovitev protokola BB84 ter ju
+uporabimo za vse prenose kvbitov.
+S tem smo odstranili nepotrebne operacije
+in izboljšali učinkovitost simulacije.
+
 
 
 

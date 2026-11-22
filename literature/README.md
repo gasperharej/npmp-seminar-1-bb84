@@ -1,9 +1,5 @@
 # Literatura in metodološka razmejitev
 
-Bibliografski podatki so v `references.bib`, prenosi v `sources.json`. Ukaz `python scripts/fetch_literature.py` shrani PDF-je v prezrto mapo `literature/pdfs/`, preveri glavo, velikost in zaključek PDF ter preskoči veljavne kopije. To preverjanje ni popoln pregled PDF. Ob napaki vrne kodo 1 in povezavo za ročni prenos.
-
-Ob pregledu 8. 11. 2026 lokalnih PDF-jev sprva ni bilo. Po dovoljenem omrežnem prenosu so bili dostopni vsi trije in njihovi spodaj navedeni deli pregledani. Dostopnost strežnikov v prihodnje ni zagotovljena; arhivska povezava ni zagotovilo trajne dosegljivosti.
-
 ## Mina in Simion (2020)
 
 *A Scalable Simulation of the BB84 Protocol Involving Eavesdropping.* [Prednatis 2020/1074](https://eprint.iacr.org/2020/1074), [arhivski PDF](https://web.archive.org/web/20240901000000id_/https://eprint.iacr.org/2020/1074.pdf).
